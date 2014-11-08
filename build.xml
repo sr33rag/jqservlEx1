@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="jqjsonEx1" basedir="." default="clean">
+    
+  <!-- Properties start-->
+  <property name="src.dir" value="src/main/java"/>
+  <property name="web.dir" value="webapp"/>
+  <property name="build.dir" value="build"/>
+  <property name="dist.dir" value="dist"/>
+  <property name="war-file" value="${ant.project.name}.war"/>
+  <property name="server.dir" value="/opt/tomee"/>
+  <!-- Properties end -->
+
+  <!-- Buildpath start-->
+  <path id="build.path">
+    <fileset dir="${server.dir}/lib">
+      <include name="*.jar"/>
+    </fileset>    
+  </path>
+  <!-- Buildpath end  -->
+
+  <!-- Targets start -->
+
+   <echo>
+    Application    : ${ant.project.name}
+    Build File     : ${ant.file}
+    Run Date       : ${build.time}
+    Run by         : ${user.name}
+    Build directory: ${build.dir}
+    Base directory : ${basedir}
+    Java Home      : ${java.home}    
+  </echo>
+      
+  <!-- Target:clean start-->
+  <target name="clean" description="Cleans the project directory">
+    <echo>Cleaning the distribution directory...</echo>
+    <delete dir="${dist.dir}"/>
+    <echo>Cleaning the build directory...</echo>
+    <delete dir="${build.dir}"/>
+    <echo>Cleaning completed...</echo>
+  </target>
+  <!-- Target:clean end -->
+ 
+ <!-- Target:prepare start  -->     
+ <target name="prepare" description="Prepares the project directory">
+    <echo>Preparing the build directory...</echo>
+    <mkdir dir="${build.dir}"/>
+    <echo>Preparing the distribution directory...</echo>
+    <mkdir dir="${dist.dir}"/>
+    <echo>Project directory preparation completed...</echo>
+ </target>
+ <!-- Target:prepare end -->
+     
+ <!-- Target:compile start -->
+ <target name="compile" description="Compiles files into build directory" depends="clean, prepare">
+   <echo>Copying required files...</echo>
+   <copy todir="${build.dir}">
+     <fileset dir="${web.dir}"/>
+   </copy>
+   <mkdir dir="${build.dir}/WEB-INF/classes"/>
+   <echo>Compiling of source files started...</echo>
+   <javac srcdir="${src.dir}" destdir="${build.dir}/WEB-INF/classes"
+     debug="false" verbose="false" includeantruntime="true">
+     <classpath refid="build.path"/>
+   </javac>
+   <echo>Compilation of source files completed...</echo>
+ </target>
+ <!-- Target:compile end -->
+
+ <!-- Target:dist start -->
+ <target name="dist" description="Packages all the required files into a war (Web Archive) file" depends="compile">
+  <war destfile="${dist.dir}/${war-file}" webxml="${build.dir}/WEB-INF/web.xml">
+   <fileset dir="${build.dir}"/>
+  </war>
+ </target>
+ <!-- Target:dist end -->
+     
+</project>
